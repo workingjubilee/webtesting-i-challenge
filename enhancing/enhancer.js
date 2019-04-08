@@ -13,6 +13,18 @@ class Item {
       this.durability = 0;
     }
 
+    if (this.durability > 100) {
+      this.durability = 100;
+    }
+
+    if (this.enhancement > 20) {
+      this.enhancement = 20;
+    }
+
+    if (this.enhancement < 0) {
+      this.enhancement = 0;
+    }
+
     if (typeof(this.durability) !== 'number') {
       this.durability = 0;
     }
@@ -20,13 +32,11 @@ class Item {
     if (typeof(this.enhancement) !== 'number') {
       this.enhancement = 0;
     }
+
+    if (typeof(this.name) !== 'string') {
+      this.name = 'Bug Staff';
+    }
   }
-
-// ### Items.
-
-// - Items have `name`, `durability` and `enhancement`.
-// - The item's `enhancement` it's a number from 0 to 20.
-// - The item's `durability` it's a number from 0 to 100.
 }
 
 
@@ -50,9 +60,7 @@ function fail(item) {
 
 function repair(item) {
   const repairedItem = new Item(item);
-  if (repairedItem.durability < 100) {
-    repairedItem.durability = 100;
-  };
+  repairedItem.durability = 100;
 
   return repairedItem;
 }

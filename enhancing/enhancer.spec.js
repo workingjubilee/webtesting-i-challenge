@@ -1,6 +1,5 @@
 const enhancer = require('./enhancer.js');
 
-
 const theDice = new enhancer.Item({ name: 'Gambler\'s Dice' });
 
 function randomize() {
@@ -29,7 +28,6 @@ it('should always return a new item', function() {
 });
 
 it('should return a complete item even if the world has gone crazy', function() {
-
   const emptiness = {};
 
   expect(enhancer.repair(emptiness)).toHaveProperty('name');
@@ -63,27 +61,45 @@ it('should successfully repair an item to 100 durability', function() {
   expect(enhancer.repair(jestRod)).toHaveProperty('durability', 100);
 });
 
-it('should successfully repair an item to 100 durability', function() {
-  const jestRod = { name: "Jester\'s Marotte", durability: 90, enhancement: 0 };
-
-  expect(enhancer.repair(jestRod)).toHaveProperty('durability', 100);
-});
-
 it('should work even if the item is bugged', function() {
   const bugStaff = { name: 100, durability: 'bugs!', enhancement: 'more bugs!' }
   const nerfStick = { name: "Underpowered Voulge", durability: -100, enhancement: -10 };
 
-  expect(enhancer.repair(bugStaff)).toHaveProperty('durability', 100)
+  expect(enhancer.repair(bugStaff)).toHaveProperty('name', 'Bug Staff');
+  expect(enhancer.repair(bugStaff)).toHaveProperty('durability', 100);
+  expect(enhancer.repair(bugStaff)).toHaveProperty('enhancement', 0);
 });
 
-it('shouldn\'t affect enhancement', function() {
+it('shouldn\'t affect enhancement in normal cases', function() {
   const jestRod = { name: "Jester\'s Marotte", durability: 90, enhancement: 1 };
+  const limitSword = { name: "Limit Edge", durability: 90, enhancement: 16 };
 
+  expect(enhancer.fail(limitSword).enhancement).toEqual(limitSword.enhancement);
   expect(enhancer.repair(jestRod).enhancement).toEqual(jestRod.enhancement);
 });
 
-it('shouldn\'t affect names', function() {
-  const jestRod = { name: "Jester\'s Marotte", durability: 90, enhancement: 0 };
+it('should correctly reduce durability on weapons', function() {
+  const maxAxe = { name: "Maximal Axe", durability: 100, enhancement: 20 }
+  const jestRod = { name: "Jester\'s Marotte", durability: 90, enhancement: 1 };
+
+  expect(enhancer.fail(maxAxe).durability).toEqual(maxAxe.durability -10);
+  expect(enhancer.fail(jestRod).durability).toEqual(jestRod.durability -5);
+});
+
+it('should correctly weaken powerful weapons', function() {
+  const maxAxe = { name: "Maximal Axe", durability: 100, enhancement: 20 }
+
+  expect(enhancer.fail(maxAxe).enhancement).toEqual(maxAxe.enhancement -1);
+});
+
+it('shouldn\'t affect durability in normal cases', function() {
+  const jestRod = { name: "Jester\'s Marotte", durability: 90, enhancement: 1 };
+
+  expect(enhancer.succeed(jestRod).durability).toEqual(jestRod.durability);
+});
+
+it('shouldn\'t affect names in normal cases', function() {
+  const jestRod = { name: "Jester\'s Marotte", durability: 90, enhancement: 1 };
 
   let repairedItem = enhancer.repair(jestRod);
 
@@ -96,16 +112,46 @@ it('shouldn\'t return overpowered items', function() {
 
   expect(enhancer.succeed(buffStick).enhancement).toEqual(20);
   expect(enhancer.succeed(maxAxe).enhancement).toEqual(20);
+
+  expect(enhancer.repair(buffStick).enhancement).toEqual(20);
+  expect(enhancer.repair(maxAxe).enhancement).toEqual(20);
+
   expect(enhancer.repair(buffStick).durability).toEqual(100);
   expect(enhancer.repair(maxAxe).durability).toEqual(100);
 })
 
 it('shouldn\'t return underpowered items', function() {
   const nerfStick = { name: "Underpowered Voulge", durability: -100, enhancement: -10 };
-  const minSickle = { name: "Minimal Sickle", durability: 100, enhancement: 20 }
+  const minSickle = { name: "Minimal Sickle", durability: 0, enhancement: 0 }
 
   expect(enhancer.fail(nerfStick).enhancement).toEqual(0);
   expect(enhancer.fail(minSickle).enhancement).toEqual(0);
+
+  expect(enhancer.repair(nerfStick).enhancement).toEqual(0);
+  expect(enhancer.repair(minSickle).enhancement).toEqual(0);
+})
+
+it('should return a new name in normal cases', function() {
+  const jestRod = { name: "Jester\'s Marotte", durability: 90, enhancement: 1 };
+
+  expect(enhancer.get(jestRod).name).not.toEqual(jestRod.name);
+})
+
+it('should return a name containing the original name', function() {
+  const jestRod = { name: "Jester\'s Marotte", durability: 90, enhancement: 1 };
+
+  expect(enhancer.get(jestRod).name).toMatch(new RegExp(jestRod.name));
+})
+
+it('should return a name containing the item\'s enhancement', function() {
+  const jestRod = { name: "Jester\'s Marotte", durability: 90, enhancement: 1 };
+
+  expect(enhancer.get(jestRod).name).toMatch(new RegExp(`[+${jestRod.enhancement}]`));
+})
+
+it('shouldn\'t change the name of weak items', function() {
+
+  expect(enhancer.get(minSickle).name).toEqual(minSickle.name);
 })
 
 // - If the item's enhancement is less than 15, the durability of the item is decreased by 5.
