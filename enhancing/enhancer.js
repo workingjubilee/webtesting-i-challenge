@@ -1,22 +1,25 @@
 class Item {
   constructor(item) {
-    this.name = item.name || "Sword of 1000 Truths";
+    this.name = item.name || 'Jester\'s Marotte';
     this.durability = item.durability || 100;
     this.enhancement = item.enhancement || 0;
+    this.normalize();
 
+    // if (this.enhancement !)
+  }
+
+  normalize() {
     if (this.durability < 0) {
       this.durability = 0;
     }
 
-    if (typeof(this.durability) !== Number) {
+    if (typeof(this.durability) !== 'number') {
       this.durability = 0;
     }
 
-    if (typeof(this.enhancement) !== Number) {
-      this.enhancement = parseInt()
+    if (typeof(this.enhancement) !== 'number') {
+      this.enhancement = 0;
     }
-
-    // if (this.enhancement !)
   }
 
 // ### Items.
@@ -28,24 +31,28 @@ class Item {
 
 
 function succeed(item) {
+  const successfulEnhancement = new Item(item);
   // - The item's enhancement increases by 1.
 // - If the item enhancement level is 20, the enhancement level is not changed.
 // - The durability of the item is not changed.
-  return { ...item };
+  return successfulEnhancement;
 }
 
 function fail(item) {
+  const failedEnhancement = new Item(item);
 
 // - If the item's enhancement is less than 15, the durability of the item is decreased by 5.
 // - If the item's enhancement is 15 or more, the durability of the item is decreased by 10.
 // - If the item's enhancement level is greater than 16, the enhancement level decreases by 1 (17 goes down to 16, 18 goes down to 17).
 
-  return { ...item };
+  return failedEnhancement;
 }
 
 function repair(item) {
   const repairedItem = new Item(item);
-  repairedItem.durability = 100;
+  if (repairedItem.durability < 100) {
+    repairedItem.durability = 100;
+  };
 
   return repairedItem;
 }
