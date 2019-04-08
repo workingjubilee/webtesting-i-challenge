@@ -50,6 +50,15 @@ function succeed(item) {
 
 function fail(item) {
   const failedEnhancement = new Item(item);
+  if (failedEnhancement.enhancement < 15) {
+    failedEnhancement.durability -= 5;
+  } else {
+    failedEnhancement.durability -= 10;
+  }
+
+  if (failedEnhancement.enhancement > 16) {
+    failedEnhancement.enhancement -= 1;
+  }
 
 // - If the item's enhancement is less than 15, the durability of the item is decreased by 5.
 // - If the item's enhancement is 15 or more, the durability of the item is decreased by 10.
@@ -66,12 +75,16 @@ function repair(item) {
 }
 
 function get(item) {
+  const renamedItem = new Item(item);
+  if (renamedItem.enhancement > 0) {
+    renamedItem.name = `[+${renamedItem.enhancement}] ${renamedItem.name}`
+  }
 //   - Add a `get()` method to the `enhancer` object that takes an `item` and **returns a new item** with the `name` property modified according to the following rules:
 //   - if the enhancement level is 0, the the name is not modified.
 //   - if the enhancement level is greater than 0, change the name to include the enhancement level, preceded by a plus sign ( + ), between square brackets before the item's name. Example: the name of a "Iron Sword" enhanced to 7 would be "[+7] Iron Sword".
 // - Design and build a Web Application to test the enhancing module you implemented for the MVP.
 // - Work on [this repository for extra practice testing JavaScript Functions](https://github.com/LambdaSchool/Testing).
-  return { ...item };
+  return renamedItem;
 }
 
 module.exports = {

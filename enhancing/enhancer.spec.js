@@ -150,6 +150,7 @@ it('should return a name containing the item\'s enhancement', function() {
 })
 
 it('shouldn\'t change the name of weak items', function() {
+  const minSickle = { name: "Minimal Sickle", durability: 0, enhancement: 0 };
 
   expect(enhancer.get(minSickle).name).toEqual(minSickle.name);
 })
