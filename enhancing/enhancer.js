@@ -3,6 +3,20 @@ class Item {
     this.name = item.name || "Sword of 1000 Truths";
     this.durability = item.durability || 100;
     this.enhancement = item.enhancement || 0;
+
+    if (this.durability < 0) {
+      this.durability = 0;
+    }
+
+    if (typeof(this.durability) !== Number) {
+      this.durability = 0;
+    }
+
+    if (typeof(this.enhancement) !== Number) {
+      this.enhancement = parseInt()
+    }
+
+    // if (this.enhancement !)
   }
 
 // ### Items.
@@ -11,8 +25,6 @@ class Item {
 // - The item's `enhancement` it's a number from 0 to 20.
 // - The item's `durability` it's a number from 0 to 100.
 }
-
-
 
 
 function succeed(item) {
@@ -34,7 +46,7 @@ function fail(item) {
 function repair(item) {
   const repairedItem = new Item(item);
   repairedItem.durability = 100;
-  
+
   return repairedItem;
 }
 
